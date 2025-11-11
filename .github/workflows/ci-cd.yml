@@ -42,6 +42,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
+
       - name: Deploy to VPS
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'EOF'
@@ -51,7 +52,7 @@ jobs:
             Pulling latest changes...
             #=======================
             "
-            echi "git pull origin main"
+            echo   "git pull origin main"
 
             echo "
             #=======================
