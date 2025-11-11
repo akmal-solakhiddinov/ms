@@ -1,0 +1,89 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main  # Deploy automatically when main branch updates
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x] # Test on one stable Node version (faster)
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build app
+        run: npm run build --if-present
+
+      - name: Run tests
+        run: npm test
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'  # Only deploy from main branch
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+
+      - name: Deploy to VPS
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'EOF'
+            cd ${{ secrets.APP_DIR }}
+            echo "
+            #=======================
+            Pulling latest changes...
+            #=======================
+            "
+            git pull origin main
+
+            echo "
+            #=======================
+            Rebuilding containers...
+            #=======================
+            "
+            docker-compose down
+            docker-compose build --no-cache
+            docker-compose up -d
+
+            echo "
+            #=======================
+            Running Prisma migrations...
+            #=======================
+            "
+            docker exec $(docker ps -qf "name=api") npx prisma migrate deploy
+
+            echo "
+            #=======================
+            Restarting PM2...
+            #=======================
+            "
+            pm2 restart all || pm2 start dist/server.js --name app
+
+            echo "
+            #=======================
+            Deployment complete!
+            #=======================
+            "
+          EOF
