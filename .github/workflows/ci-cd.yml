@@ -10,11 +10,11 @@ jobs:
    
    steps:
     - name: Setup node js
-      run: echo "#==================seting up node js#====================="
+      run: echo "#==================seting up node js ====================="
     - name: Installing dependensies
-      run: echo "#================== Instaling #====================="
+      run: echo "#================== Instaling ====================="
     - name: building
-      run: echo "#================== BUILDING #====================="
+      run: echo "#================== BUILDING ====================="
     
   
   deploy:
