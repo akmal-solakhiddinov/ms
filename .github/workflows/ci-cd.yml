@@ -1,85 +1,32 @@
 name: CI/CD Pipeline
-
 on:
-  push:
-    branches:
-      - main  # Deploy automatically when main branch updates
-  pull_request:
-    branches:
-      - main
+ push:
+   branches:
+   - main
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        run: echo node js installed
-        
-      - name: Install dependencies
-        run: echo install dependencies
-
-      - name: Build app
-        run: echo npm run build --if-present
-
-      - name: Run tests
-        run: echo  npm test
-        
-
+   runs-on: ubuntu-latest
+   
+   steps:
+    - name: Setup node js
+      run: echo "#==================seting up node js#====================="
+    - name: Installing dependensies
+      run: echo "#================== Instaling #====================="
+    - name: building
+      run: echo "#================== BUILDING #====================="
+    
+  
   deploy:
     needs: build-and-test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'  # Only deploy from main branch
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up SSH
+      - name: Setup SSH
         uses: webfactory/ssh-agent@v0.9.0
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-
-      - name: Deploy to VPS
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'EOF'
-            cd ${{ secrets.APP_DIR }}
-            echo "
-            #=======================
-            Pulling latest changes...
-            #=======================
-            "
-            echo   "git pull origin main"
-
-            echo "
-            #=======================
-            Rebuilding containers...
-            #=======================
-            "
-            echo "docker-compose down
-            docker-compose build --no-cache
-            docker-compose up -d"
-            
-            echo "
-            #=======================
-            Running Prisma migrations...
-            #=======================
-            "
-            echo "docker exec $(docker ps -qf "name=api") npx prisma migrate deploy"
-
-            echo "
-            #=======================
-            Restarting PM2...
-            #=======================
-            "
-            echo "pm2 restart all || pm2 start dist/server.js --name app"
-
-            echo "
-            #=======================
-            Deployment complete!
-            #=======================
-            "
-          EOF
+          ssh-private-key: ${{secrets.SSH_PRIVATE_KEY}}      
+          
