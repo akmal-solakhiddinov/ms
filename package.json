@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "ts-node-dev src/index.ts",
     "build": "rimraf ./dist && tsc",
-    "start": "npm run build"
-    "test":"Test Succesfully Finished"
+    "start": "npm run build",
+    "test": "Test Succesfully Finished"
   },
   "repository": {
     "type": "git",
