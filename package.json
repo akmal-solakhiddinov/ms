@@ -1,0 +1,32 @@
+{
+  "name": "ms",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "ts-node-dev src/index.ts",
+    "build": "rimraf ./dist && tsc",
+    "start": "npm run build"
+    "test":"Test Succesfully Finished"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akmal-solakhiddinov/ms.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/akmal-solakhiddinov/ms/issues"
+  },
+  "homepage": "https://github.com/akmal-solakhiddinov/ms#readme",
+  "devDependencies": {
+    "@types/express": "^5.0.5",
+    "@types/node": "^24.10.1",
+    "@types/rimraf": "^3.0.2",
+    "express": "^5.1.0",
+    "rimraf": "^6.1.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.9.3"
+  }
+}
