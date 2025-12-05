@@ -1,12 +1,25 @@
-import express from "express";
+import dotenv from "dotenv";
+import { startServer } from "./server";
+import logger from "./utils/logger";
+dotenv.config();
 
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-app.get("/", (req, res) => {
-  res.send("Hello from Express + TypeScript!");
+process.on("uncaughtException", (error: Error) => {
+  logger.error("Uncaught Exception", error);
+  process.exit(1);
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+process.on("unhandledRejection", (reason: any) => {
+  logger.error("Unhandled Rejection", reason);
+  process.exit(1);
 });
+
+async function start() {
+  try {
+    await startServer();
+  } catch (error) {
+    logger.error("Failed to start server:", error);
+    process.exit(1);
+  }
+}
+
+start();
